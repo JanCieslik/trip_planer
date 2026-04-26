@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Travel Planner</title>
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: system-ui, sans-serif; background: #eef2f7; color: #1a1a2e; }
+      .app { max-width: 720px; margin: 56px auto; padding: 0 20px; }
+      h1 { font-size: 1.9rem; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.5px; }
+      .subtitle { color: #666; margin-bottom: 28px; font-size: 0.95rem; }
+      .input-row { display: flex; gap: 8px; margin-bottom: 36px; }
+      .input-row input {
+        flex: 1; padding: 12px 16px; font-size: 1rem;
+        border: 1.5px solid #d0d7e3; border-radius: 8px;
+        outline: none; background: #fff;
+        transition: border-color 0.15s;
+      }
+      .input-row input:focus { border-color: #4a90d9; box-shadow: 0 0 0 3px rgba(74,144,217,0.12); }
+      .input-row button {
+        padding: 12px 22px; font-size: 1rem; font-weight: 600;
+        background: #4a90d9; color: #fff;
+        border: none; border-radius: 8px; cursor: pointer;
+        transition: background 0.15s, transform 0.1s;
+        white-space: nowrap;
+      }
+      .input-row button:hover:not(:disabled) { background: #3578c0; transform: translateY(-1px); }
+      .input-row button:active:not(:disabled) { transform: translateY(0); }
+      .input-row button:disabled { background: #b0bec5; cursor: not-allowed; }
+      .results { display: flex; flex-direction: column; gap: 14px; }
+      .section {
+        background: #fff; border-radius: 10px;
+        padding: 20px 24px; border: 1px solid #dde3ec;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      }
+      .section h2 {
+        font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em;
+        text-transform: uppercase; color: #4a90d9;
+        margin-bottom: 12px;
+      }
+      .section ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+      .section ul li { padding-left: 14px; position: relative; line-height: 1.5; font-size: 0.95rem; }
+      .section ul li::before { content: "–"; position: absolute; left: 0; color: #99b8d8; }
+      .loading { text-align: center; color: #999; padding: 40px; font-size: 0.95rem; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script type="text/babel">
+      const { useState } = React;
+
+      const MOCK_PLAN = {
+        transport: [
+          "Flight Warsaw (WAW) → Barcelona (BCN), ~2h 30min",
+          "Recommended airlines: Ryanair, Wizz Air, LOT",
+          "Local transport: metro T1/T2 lines cover most attractions",
+          "Barcelona Card recommended for unlimited metro rides",
+        ],
+        accommodation: [
+          "Eixample district — central, walkable, good metro access",
+          "Budget pick: Generator Hostel Barcelona (~€30/night)",
+          "Mid-range: Hotel Praktik Rambla (~€90/night)",
+          "Tip: book at least 4 weeks ahead for July stays",
+        ],
+        attractions: [
+          "Day 1 — Sagrada Família + Gràcia neighbourhood",
+          "Day 2 — Park Güell + Camp Nou tour",
+          "Day 3 — Gothic Quarter + Barceloneta Beach",
+          "Day 4 — Casa Batlló + Passeig de Gràcia shopping",
+          "Day 5 — Montjuïc castle + Poble Sec food scene",
+        ],
+      };
+
+      function PlanSection({ title, items }) {
+        return (
+          <div className="section">
+            <h2>{title}</h2>
+            <ul>
+              {items.map((item, i) => <li key={i}>{item}</li>)}
+            </ul>
+          </div>
+        );
+      }
+
+      function App() {
+        const [prompt, setPrompt] = useState("");
+        const [plan, setPlan] = useState(null);
+        const [loading, setLoading] = useState(false);
+
+        function handleGenerate() {
+          if (!prompt.trim()) return;
+          setLoading(true);
+          setPlan(null);
+          setTimeout(() => { setPlan(MOCK_PLAN); setLoading(false); }, 1000);
+        }
+
+        return (
+          <div className="app">
+            <h1>Travel Planner</h1>
+            <p className="subtitle">Describe your trip and get an instant plan.</p>
+            <div className="input-row">
+              <input
+                type="text"
+                placeholder='e.g. "Trip to Barcelona, 5 days, from Warsaw, July"'
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleGenerate()}
+              />
+              <button onClick={handleGenerate} disabled={loading || !prompt.trim()}>
+                {loading ? "Generating…" : "Generate Plan"}
+              </button>
+            </div>
+            {loading && <p className="loading">Generating your travel plan…</p>}
+            {plan && (
+              <div className="results">
+                <PlanSection title="Transport" items={plan.transport} />
+                <PlanSection title="Accommodation" items={plan.accommodation} />
+                <PlanSection title="Attractions" items={plan.attractions} />
+              </div>
+            )}
+          </div>
+        );
+      }
+
+      ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+    </script>
+  </body>
+</html>
