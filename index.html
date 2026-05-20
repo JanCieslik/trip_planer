@@ -3,46 +3,226 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Travel Planner</title>
+    <title>Planer Podróży</title>
     <style>
       * { box-sizing: border-box; margin: 0; padding: 0; }
-      body { font-family: system-ui, sans-serif; background: #eef2f7; color: #1a1a2e; }
-      .app { max-width: 720px; margin: 56px auto; padding: 0 20px; }
-      h1 { font-size: 1.9rem; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.5px; }
-      .subtitle { color: #666; margin-bottom: 28px; font-size: 0.95rem; }
-      .input-row { display: flex; gap: 8px; margin-bottom: 36px; }
-      .input-row input {
-        flex: 1; padding: 12px 16px; font-size: 1rem;
-        border: 1.5px solid #d0d7e3; border-radius: 8px;
-        outline: none; background: #fff;
-        transition: border-color 0.15s;
+
+      body {
+        font-family: system-ui, sans-serif;
+        background: #0f172a;
+        color: #e2e8f0;
+        min-height: 100vh;
       }
-      .input-row input:focus { border-color: #4a90d9; box-shadow: 0 0 0 3px rgba(74,144,217,0.12); }
-      .input-row button {
-        padding: 12px 22px; font-size: 1rem; font-weight: 600;
-        background: #4a90d9; color: #fff;
-        border: none; border-radius: 8px; cursor: pointer;
-        transition: background 0.15s, transform 0.1s;
-        white-space: nowrap;
+
+      .app {
+        max-width: 780px;
+        margin: 0 auto;
+        padding: 48px 24px 80px;
       }
-      .input-row button:hover:not(:disabled) { background: #3578c0; transform: translateY(-1px); }
-      .input-row button:active:not(:disabled) { transform: translateY(0); }
-      .input-row button:disabled { background: #b0bec5; cursor: not-allowed; }
-      .results { display: flex; flex-direction: column; gap: 14px; }
+
+      /* ── Header ── */
+      .header { margin-bottom: 40px; }
+      .header h1 {
+        font-size: 2.2rem;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        background: linear-gradient(135deg, #60a5fa, #a78bfa);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .header p { color: #64748b; margin-top: 6px; font-size: 0.95rem; }
+
+      /* ── Card ── */
+      .card {
+        background: #1e293b;
+        border: 1px solid #334155;
+        border-radius: 16px;
+        padding: 28px;
+        margin-bottom: 24px;
+      }
+      .card-title {
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #64748b;
+        margin-bottom: 18px;
+      }
+
+      /* ── Form grid ── */
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      .form-grid .span2 { grid-column: span 2; }
+
+      .field label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #94a3b8;
+        margin-bottom: 6px;
+      }
+      .field input,
+      .field select {
+        width: 100%;
+        padding: 10px 14px;
+        font-size: 0.95rem;
+        background: #0f172a;
+        border: 1.5px solid #334155;
+        border-radius: 8px;
+        color: #e2e8f0;
+        outline: none;
+        transition: border-color 0.15s, box-shadow 0.15s;
+        appearance: none;
+      }
+      .field select { cursor: pointer; }
+      .field input::placeholder { color: #475569; }
+      .field input:focus,
+      .field select:focus {
+        border-color: #60a5fa;
+        box-shadow: 0 0 0 3px rgba(96,165,250,0.15);
+      }
+
+      /* ── Style chips ── */
+      .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+      .chip {
+        padding: 7px 16px;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        border: 1.5px solid #334155;
+        background: transparent;
+        color: #94a3b8;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+      .chip:hover { border-color: #60a5fa; color: #60a5fa; }
+      .chip.active { background: #1d4ed8; border-color: #3b82f6; color: #fff; }
+
+      /* ── Generate button ── */
+      .btn-generate {
+        width: 100%;
+        padding: 14px;
+        font-size: 1rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: opacity 0.15s, transform 0.1s;
+        letter-spacing: 0.02em;
+      }
+      .btn-generate:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
+      .btn-generate:active:not(:disabled) { transform: translateY(0); }
+      .btn-generate:disabled { opacity: 0.4; cursor: not-allowed; }
+
+      /* ── Summary tags ── */
+      .summary-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+      .tag {
+        padding: 4px 12px;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        background: #1e3a5f;
+        color: #60a5fa;
+        border: 1px solid #1d4ed8;
+      }
+
+      /* ── Result sections ── */
+      .results { display: flex; flex-direction: column; gap: 12px; }
       .section {
-        background: #fff; border-radius: 10px;
-        padding: 20px 24px; border: 1px solid #dde3ec;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        background: #1e293b;
+        border: 1px solid #334155;
+        border-radius: 12px;
+        overflow: hidden;
       }
-      .section h2 {
-        font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em;
-        text-transform: uppercase; color: #4a90d9;
-        margin-bottom: 12px;
+      .section-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 20px;
+        border-bottom: 1px solid #334155;
+        background: #162032;
       }
-      .section ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
-      .section ul li { padding-left: 14px; position: relative; line-height: 1.5; font-size: 0.95rem; }
-      .section ul li::before { content: "–"; position: absolute; left: 0; color: #99b8d8; }
-      .loading { text-align: center; color: #999; padding: 40px; font-size: 0.95rem; }
+      .section-icon { font-size: 1.1rem; }
+      .section-header h2 {
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #93c5fd;
+      }
+      .section ul { list-style: none; padding: 14px 20px; display: flex; flex-direction: column; gap: 10px; }
+      .section ul li {
+        padding-left: 16px;
+        position: relative;
+        line-height: 1.55;
+        font-size: 0.92rem;
+        color: #cbd5e1;
+      }
+      .section ul li::before { content: "›"; position: absolute; left: 0; color: #3b82f6; font-weight: 700; }
+
+      /* ── Debug panel ── */
+      .debug {
+        background: #0d1117;
+        border: 1px solid #334155;
+        border-radius: 12px;
+        overflow: hidden;
+        margin-top: 24px;
+      }
+      .debug-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 16px;
+        background: #161b22;
+        border-bottom: 1px solid #334155;
+        cursor: pointer;
+        user-select: none;
+      }
+      .debug-header span {
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #4ade80;
+      }
+      .debug-header .debug-arrow {
+        font-size: 0.7rem;
+        color: #475569;
+        transition: transform 0.2s;
+      }
+      .debug-header .debug-arrow.open { transform: rotate(180deg); }
+      .debug pre {
+        padding: 16px;
+        font-family: "Cascadia Code", "Fira Code", monospace;
+        font-size: 0.8rem;
+        line-height: 1.6;
+        color: #a3e635;
+        overflow-x: auto;
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
+      .debug .key { color: #60a5fa; }
+      .debug .str { color: #a3e635; }
+      .debug .num { color: #f97316; }
+
+      /* ── Loading ── */
+      .loading {
+        text-align: center;
+        color: #475569;
+        padding: 48px;
+        font-size: 0.95rem;
+      }
+      .loading span {
+        display: inline-block;
+        animation: pulse 1.2s ease-in-out infinite;
+      }
+      @keyframes pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
     </style>
   </head>
   <body>
@@ -53,32 +233,68 @@
     <script type="text/babel">
       const { useState } = React;
 
+      const MONTHS = ["Styczeń","Luty","Marzec","Kwiecień","Maj","Czerwiec",
+                      "Lipiec","Sierpień","Wrzesień","Październik","Listopad","Grudzień"];
+      const STYLES = ["Budżetowy","Komfortowy","Luksusowy","Backpacker","Rodzinny"];
+
       const MOCK_PLAN = {
         transport: [
-          "Flight Warsaw (WAW) → Barcelona (BCN), ~2h 30min",
-          "Recommended airlines: Ryanair, Wizz Air, LOT",
-          "Local transport: metro T1/T2 lines cover most attractions",
-          "Barcelona Card recommended for unlimited metro rides",
+          "Lot Warszawa (WAW) → Barcelona (BCN), ~2h 30min",
+          "Polecane linie: Ryanair, Wizz Air, LOT",
+          "Transport miejski: metro linie T1/T2 obsługują większość atrakcji",
+          "Barcelona Card polecana — nielimitowane przejazdy metrem",
         ],
         accommodation: [
-          "Eixample district — central, walkable, good metro access",
-          "Budget pick: Generator Hostel Barcelona (~€30/night)",
-          "Mid-range: Hotel Praktik Rambla (~€90/night)",
-          "Tip: book at least 4 weeks ahead for July stays",
+          "Dzielnica Eixample — centralna, wygodna, dobry dostęp do metra",
+          "Budżetowo: Generator Hostel Barcelona (~30€/noc)",
+          "Średni standard: Hotel Praktik Rambla (~90€/noc)",
+          "Wskazówka: rezerwuj min. 4 tygodnie przed wyjazdem w lipcu",
         ],
         attractions: [
-          "Day 1 — Sagrada Família + Gràcia neighbourhood",
-          "Day 2 — Park Güell + Camp Nou tour",
-          "Day 3 — Gothic Quarter + Barceloneta Beach",
-          "Day 4 — Casa Batlló + Passeig de Gràcia shopping",
-          "Day 5 — Montjuïc castle + Poble Sec food scene",
+          "Dzień 1 — Sagrada Família + dzielnica Gràcia",
+          "Dzień 2 — Park Güell + zwiedzanie Camp Nou",
+          "Dzień 3 — Dzielnica Gotycka + plaża Barceloneta",
+          "Dzień 4 — Casa Batlló + zakupy na Passeig de Gràcia",
+          "Dzień 5 — Zamek Montjuïc + scena kulinarna Poble Sec",
         ],
       };
 
-      function PlanSection({ title, items }) {
+      const SECTIONS = [
+        { key: "transport",     icon: "✈️", label: "Transport" },
+        { key: "accommodation", icon: "🏨", label: "Zakwaterowanie" },
+        { key: "attractions",   icon: "📍", label: "Atrakcje" },
+      ];
+
+      function highlight(json) {
+        return json
+          .replace(/("[\w_]+")\s*:/g, '<span class="key">$1</span>:')
+          .replace(/:\s*(".*?")/g, ': <span class="str">$1</span>')
+          .replace(/:\s*(\d+)/g, ': <span class="num">$1</span>');
+      }
+
+      function DebugPanel({ payload }) {
+        const [open, setOpen] = useState(false);
+        const json = JSON.stringify(payload, null, 2);
+        return (
+          <div className="debug">
+            <div className="debug-header" onClick={() => setOpen(o => !o)}>
+              <span>Przekazane dane (prompt payload)</span>
+              <span className={"debug-arrow" + (open ? " open" : "")}>▼</span>
+            </div>
+            {open && (
+              <pre dangerouslySetInnerHTML={{ __html: highlight(json) }} />
+            )}
+          </div>
+        );
+      }
+
+      function PlanSection({ icon, label, items }) {
         return (
           <div className="section">
-            <h2>{title}</h2>
+            <div className="section-header">
+              <span className="section-icon">{icon}</span>
+              <h2>{label}</h2>
+            </div>
             <ul>
               {items.map((item, i) => <li key={i}>{item}</li>)}
             </ul>
@@ -87,39 +303,122 @@
       }
 
       function App() {
-        const [prompt, setPrompt] = useState("");
+        const [form, setForm] = useState({ destination: "", origin: "", days: "", month: "", travelers: "1", style: "Comfort" });
         const [plan, setPlan] = useState(null);
         const [loading, setLoading] = useState(false);
 
+        const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
+        const canGenerate = form.destination.trim() && form.origin.trim() && !loading;
+
         function handleGenerate() {
-          if (!prompt.trim()) return;
+          if (!canGenerate) return;
           setLoading(true);
           setPlan(null);
-          setTimeout(() => { setPlan(MOCK_PLAN); setLoading(false); }, 1000);
+          const payload = {
+            skad: form.origin,
+            dokad: form.destination,
+            liczba_dni: form.days ? Number(form.days) : null,
+            miesiac: form.month || null,
+            liczba_osob: Number(form.travelers),
+            styl: form.style,
+          };
+          setTimeout(() => { setPlan({ ...MOCK_PLAN, meta: { ...form }, payload }); setLoading(false); }, 1100);
         }
+
+        const tags = plan ? [
+          plan.meta.origin + " → " + plan.meta.destination,
+          plan.meta.days ? plan.meta.days + " dni" : null,
+          plan.meta.month || null,
+          plan.meta.travelers + (plan.meta.travelers === "1" ? " osoba" : " osoby"),
+          plan.meta.style,
+        ].filter(Boolean) : [];
 
         return (
           <div className="app">
-            <h1>Travel Planner</h1>
-            <p className="subtitle">Describe your trip and get an instant plan.</p>
-            <div className="input-row">
-              <input
-                type="text"
-                placeholder='e.g. "Trip to Barcelona, 5 days, from Warsaw, July"'
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleGenerate()}
-              />
-              <button onClick={handleGenerate} disabled={loading || !prompt.trim()}>
-                {loading ? "Generating…" : "Generate Plan"}
-              </button>
+            <div className="header">
+              <h1>Planer Podróży</h1>
+              <p>Uzupełnij szczegóły wyjazdu i otrzymaj spersonalizowany plan.</p>
             </div>
-            {loading && <p className="loading">Generating your travel plan…</p>}
+
+            <div className="card">
+              <div className="card-title">Szczegóły wyjazdu</div>
+              <div className="form-grid">
+                <div className="field span2">
+                  <label>Skąd</label>
+                  <input
+                    type="text"
+                    placeholder="Miasto wylotu, np. Warszawa"
+                    value={form.origin}
+                    onChange={e => set("origin", e.target.value)}
+                  />
+                </div>
+                <div className="field span2">
+                  <label>Dokąd</label>
+                  <input
+                    type="text"
+                    placeholder="Dokąd chcesz polecieć?"
+                    value={form.destination}
+                    onChange={e => set("destination", e.target.value)}
+                  />
+                </div>
+                <div className="field">
+                  <label>Liczba dni</label>
+                  <input
+                    type="number"
+                    min="1" max="30"
+                    placeholder="np. 5"
+                    value={form.days}
+                    onChange={e => set("days", e.target.value)}
+                  />
+                </div>
+                <div className="field">
+                  <label>Miesiąc</label>
+                  <select value={form.month} onChange={e => set("month", e.target.value)}>
+                    <option value="">Dowolny miesiąc</option>
+                    {MONTHS.map(m => <option key={m}>{m}</option>)}
+                  </select>
+                </div>
+                <div className="field">
+                  <label>Liczba osób</label>
+                  <select value={form.travelers} onChange={e => set("travelers", e.target.value)}>
+                    {[1,2,3,4,5,6].map(n => <option key={n} value={n}>{n} {n === 1 ? "osoba" : n < 5 ? "osoby" : "osób"}</option>)}
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div className="card">
+              <div className="card-title">Styl podróży</div>
+              <div className="chips">
+                {STYLES.map(s => (
+                  <button
+                    key={s}
+                    className={"chip" + (form.style === s ? " active" : "")}
+                    onClick={() => set("style", s)}
+                  >{s}</button>
+                ))}
+              </div>
+            </div>
+
+            <button className="btn-generate" onClick={handleGenerate} disabled={!canGenerate}>
+              {loading ? "Generowanie planu…" : "Generuj Plan"}
+            </button>
+
+            {loading && (
+              <div className="loading"><span>Tworzenie planu podróży…</span></div>
+            )}
+
             {plan && (
-              <div className="results">
-                <PlanSection title="Transport" items={plan.transport} />
-                <PlanSection title="Accommodation" items={plan.accommodation} />
-                <PlanSection title="Attractions" items={plan.attractions} />
+              <div style={{ marginTop: 32 }}>
+                <div className="summary-tags">
+                  {tags.map((t, i) => <span key={i} className="tag">{t}</span>)}
+                </div>
+                <div className="results">
+                  {SECTIONS.map(s => (
+                    <PlanSection key={s.key} icon={s.icon} label={s.label} items={plan[s.key]} />
+                  ))}
+                </div>
+                <DebugPanel payload={plan.payload} />
               </div>
             )}
           </div>
